@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${DATA_SERVICE_DEPLOYMENT_NAME}
+  namespace: default
+  labels:
+    app: ${DATA_SERVICE_DEPLOYMENT_NAME}
+    environment: production
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${DATA_SERVICE_DEPLOYMENT_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${DATA_SERVICE_DEPLOYMENT_NAME}
+    spec:
+      containers:
+        - name: data-service
+          image: ${ZONE_REPO}-docker.pkg.dev/${PROJECT_ID}/${DATA_SERVICE_REPO}/${DATA_SERVICE_REGISTRY_PATH}:1.0.2
+          ports:
+            - containerPort: ${DATA_SERVICE_PORT}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: data-service-configmap
+                  key: redis-host
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: data-service-configmap
+                  key: redis-port
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${DATA_SERVICE_DEPLOYMENT_NAME}
+  labels:
+    app: ${DATA_SERVICE_DEPLOYMENT_NAME}
+
+spec:
+  selector:
+    app: ${DATA_SERVICE_DEPLOYMENT_NAME}
+  ports:
+    - protocol: TCP
+      name: app
+      port: ${DATA_SERVICE_PORT}
+      targetPort: ${DATA_SERVICE_PORT}
+  type: LoadBalancer
