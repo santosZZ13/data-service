@@ -6,8 +6,8 @@ services:
       context: .
     ports:
       - "8080:8080"
-    depends_on:
-      - redis
+#    depends_on:
+#      - redis
     networks:
       - data-service-network
 #    environment:
@@ -15,23 +15,23 @@ services:
 #        - REDIS_PORT=6379
 
 
-  redis:
-    image: redis:7.4.0
-    restart: always
-    #    expose:
-    #      - 6379:6379
-    hostname: redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/var/lib/redis/data
-    networks:
-      - data-service-network
+#  redis:
+#    image: redis:7.4.0
+#    restart: always
+#    #    expose:
+#    #      - 6379:6379
+#    hostname: redis
+#    ports:
+#      - "6379:6379"
+#    volumes:
+#      - redis-data:/var/lib/redis/data
+#    networks:
+#      - data-service-network
+#
 
-
-volumes:
-  #  db-data:
-  redis-data:
+#volumes:
+#  #  db-data:
+#  redis-data:
 
 networks:
   data-service-network:

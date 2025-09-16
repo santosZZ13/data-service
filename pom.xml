@@ -6,13 +6,13 @@
     <artifactId>Data</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Data</name>
-    <url>http://maven.apache.org</url>
+    <name>data-service</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.mapstruct.version>1.6.0</org.mapstruct.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <java.version>17</java.version>
     </properties>
 
     <parent>
@@ -142,6 +142,7 @@
 <!--            <version>7.14.0</version>-->
 <!--        </dependency>-->
     </dependencies>
+
 
     <build>
         <plugins>
