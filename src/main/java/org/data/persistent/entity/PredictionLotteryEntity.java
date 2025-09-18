@@ -70,7 +70,7 @@ public class PredictionLotteryEntity {
 		private String result;
 		private String status;
 		private String specialPrize;
-
+		private List<String> listedNumbers;
 		private Double betAmount;
 		private Double initialBalance;
 		private Double currentBalance;
