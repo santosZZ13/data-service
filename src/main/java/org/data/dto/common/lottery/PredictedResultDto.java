@@ -15,16 +15,17 @@ import java.util.List;
 public class PredictedResultDto {
 	private long roundId;
 	private String predict;
-	private Double betAmount;
-	private List<String> listedNumbers;
-
 	private String result;
 	private String status;
 	private String specialPrize;
-	//	private Double initialBalance;
-//	private Double currentBalance;
+	private String resultSpecialPrize;
+	private Double betAmount;
+
+	private List<String> listedNumbers;
+	private List<String> listedNumbersSpecialPrize;
+
 	private Double profit;
 	private Double loss;
-	private Double totalProfit;
+	private Double win;
 }
 

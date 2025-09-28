@@ -69,15 +69,8 @@ public class LotteryServiceImpl implements LotteryService {
 								.lotteryID(lotteryResults.getLotteryId())
 								.roundId(lotteryResults.getRoundId())
 								.roundTime(lotteryResults.getRoundTime())
-//							.closeTime(resultDto.getCloseTime())
+								.resultSpecialPrize(lotteryResults.getResultSpecialPrize())
 								.specialPrize(lotteryResults.getSpecialPrize())
-								.firstPrize(lotteryResults.getFirstPrize())
-								.secondPrize(lotteryResults.getSecondPrize())
-								.thirdPrize(lotteryResults.getThirdPrize())
-								.fourthPrize(lotteryResults.getFourthPrize())
-								.fifthPrize(lotteryResults.getFifthPrize())
-								.sixthPrize(lotteryResults.getSixthPrize())
-								.seventhPrize(lotteryResults.getSeventhPrize())
 								.build();
 
 					}
@@ -91,11 +84,12 @@ public class LotteryServiceImpl implements LotteryService {
 								.result(predictResults.getResult())
 								.status(predictResults.getStatus())
 								.listedNumbers(predictResults.getListedNumbers())
+								.listedNumbersSpecialPrize(predictResults.getListedNumbersSpecialPrize())
 								.specialPrize(predictResults.getSpecialPrize())
 								.betAmount(predictResults.getBetAmount())
 								.profit(predictResults.getProfit())
 								.loss(predictResults.getLoss())
-								.totalProfit(predictResults.getTotalProfit())
+								.win(predictResults.getWin())
 								.build();
 					}
 
@@ -112,11 +106,22 @@ public class LotteryServiceImpl implements LotteryService {
 				.phaseId(next)
 				.startTime(TimeUtil.convertStringToLocalDateTime(lotteryResultData.getStartTime()))
 				.endTime(TimeUtil.convertStringToLocalDateTime(lotteryResultData.getEndTime()))
-				.total(lotteryResultData.getTotal())
-				.win(lotteryResultData.getWin())
-				.lose(lotteryResultData.getLose())
-				.initialBalance(lotteryResultData.getInitialBalance())
+
+				.balance(lotteryResultData.getBalance())
 				.currentBalance(lotteryResultData.getCurrentBalance())
+				.targetBalance(lotteryResultData.getTargetBalance())
+
+				.totalJoined(lotteryResultData.getTotalJoined())
+				.total(lotteryResultData.getTotal())
+				.totalBet(lotteryResultData.getTotalBet())
+				.totalWin(lotteryResultData.getTotalWin())
+				.totalLose(lotteryResultData.getTotalLose())
+
+				.moneyWin(lotteryResultData.getMoneyWin())
+				.moneyLose(lotteryResultData.getMoneyLose())
+
+
+
 				.results(predictionsEntities)
 				.created(LocalDateTime.now())
 				.updated(LocalDateTime.now())
@@ -147,13 +152,7 @@ public class LotteryServiceImpl implements LotteryService {
 												.lotteryId(lotteryResultEntity.getLotteryID())
 												.roundTime(lotteryResultEntity.getRoundTime())
 												.specialPrize(lotteryResultEntity.getSpecialPrize())
-												.firstPrize(lotteryResultEntity.getFirstPrize())
-												.secondPrize(lotteryResultEntity.getSecondPrize())
-												.thirdPrize(lotteryResultEntity.getThirdPrize())
-												.fourthPrize(lotteryResultEntity.getFourthPrize())
-												.fifthPrize(lotteryResultEntity.getFifthPrize())
-												.sixthPrize(lotteryResultEntity.getSixthPrize())
-												.seventhPrize(lotteryResultEntity.getSeventhPrize())
+												.resultSpecialPrize(lotteryResultEntity.getResultSpecialPrize())
 												.build();
 									}
 									PredictedResultDto predictedResultDto = null;
@@ -163,13 +162,15 @@ public class LotteryServiceImpl implements LotteryService {
 												.roundId(predictedResultEntity.getRoundId())
 												.predict(predictedResultEntity.getPredict())
 												.listedNumbers(predictedResultEntity.getListedNumbers())
+												.listedNumbersSpecialPrize(predictedResultEntity.getListedNumbersSpecialPrize())
 												.result(predictedResultEntity.getResult())
 												.status(predictedResultEntity.getStatus())
 												.specialPrize(predictedResultEntity.getSpecialPrize())
+												.resultSpecialPrize(predictedResultEntity.getResultSpecialPrize())
 												.betAmount(predictedResultEntity.getBetAmount())
 												.profit(predictedResultEntity.getProfit())
 												.loss(predictedResultEntity.getLoss())
-												.totalProfit(predictedResultEntity.getTotalProfit())
+												.win(predictedResultEntity.getWin())
 												.build();
 									}
 									LotteryDto lotteryDto = LotteryDto.builder()
@@ -184,14 +185,22 @@ public class LotteryServiceImpl implements LotteryService {
 							.phaseId(entity.getPhaseId())
 							.startTime(TimeUtil.convertLocalDateTimeToString(entity.getStartTime()))
 							.endTime(TimeUtil.convertLocalDateTimeToString(entity.getEndTime()))
-							.total(entity.getTotal())
-							.win(entity.getWin())
-							.lose(entity.getLose())
-							.initialBalance(entity.getInitialBalance())
+							.balance(entity.getBalance())
+							.targetBalance(entity.getTargetBalance())
 							.currentBalance(entity.getCurrentBalance())
+
+							.totalJoined(entity.getTotalJoined())
+							.total(entity.getTotal())
+							.totalBet(entity.getTotalBet())
+							.totalWin(entity.getTotalWin())
+							.totalLose(entity.getTotalLose())
+
+							.moneyWin(entity.getMoneyWin())
+							.moneyLose(entity.getMoneyLose())
 							.results(lotteryDtos)
 							.build();
 				}
+
 		).toList();
 		return GetLotteryResultPredictDto.Response.builder()
 				.message("Prediction results retrieved successfully")

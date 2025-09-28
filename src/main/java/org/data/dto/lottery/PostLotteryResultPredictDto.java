@@ -27,11 +27,24 @@ public interface PostLotteryResultPredictDto {
 		private long phaseId;
 		private String startTime;
 		private String endTime;
-		private int total;
-		private int win;
-		private int lose;
-		private Double initialBalance;
+
+		private Double balance;
+		private Double targetBalance;
 		private Double currentBalance;
+
+		private int total;
+		private int totalJoined;
+		private long totalBet;
+		private int totalWin;
+		private int totalLose;
+
+
+
+		private Double moneyWin;
+		private Double moneyLose;
+		private int profit;
+
+
 		private List<LotteryDto> results;
 	}
 

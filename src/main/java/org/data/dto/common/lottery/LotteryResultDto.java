@@ -17,11 +17,6 @@ public class LotteryResultDto {
 	private long roundTime;
 //	private long closeTime;
 	private String specialPrize;
-	private String firstPrize;
-	private List<String> secondPrize;
-	private List<String> thirdPrize;
-	private List<String> fourthPrize;
-	private List<String> fifthPrize;
-	private List<String> sixthPrize;
-	private List<String> seventhPrize;
+	private String resultSpecialPrize;
+
 }

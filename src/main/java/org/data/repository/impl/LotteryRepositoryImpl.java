@@ -24,13 +24,6 @@ public class LotteryRepositoryImpl implements LotteryRepository {
 					.lotteryID(dto.getLotteryId())
 					.roundTime(dto.getRoundTime())
 					.specialPrize(dto.getSpecialPrize())
-					.firstPrize(dto.getFirstPrize())
-					.secondPrize(dto.getSecondPrize())
-					.thirdPrize(dto.getThirdPrize())
-					.fourthPrize(dto.getFourthPrize())
-					.fifthPrize(dto.getFifthPrize())
-					.sixthPrize(dto.getSixthPrize())
-					.seventhPrize(dto.getSeventhPrize())
 					.created(LocalDateTime.now())
 					.updated(LocalDateTime.now())
 					.build();
