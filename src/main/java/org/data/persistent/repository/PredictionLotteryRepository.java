@@ -4,4 +4,6 @@ import org.data.persistent.entity.PredictionLotteryEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface PredictionLotteryRepository extends MongoRepository<PredictionLotteryEntity, Long> {
+	// detele by lotteryId and roundId
+	void deleteByPhaseId(long phaseId);
 }

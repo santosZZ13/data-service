@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.data.dto.common.lottery.LotteryDto;
 import org.data.dto.common.lottery.LotteryResultDto;
 import org.data.dto.common.lottery.PredictedResultDto;
+import org.data.dto.lottery.DeleteLotteryResultPredictDto;
 import org.data.dto.lottery.GetLotteryResultPredictDto;
 import org.data.dto.lottery.PostLotteryResultPredictDto;
 import org.data.dto.lottery.SaveLotteryDto;
@@ -119,8 +120,7 @@ public class LotteryServiceImpl implements LotteryService {
 
 				.moneyWin(lotteryResultData.getMoneyWin())
 				.moneyLose(lotteryResultData.getMoneyLose())
-
-
+				.profit(lotteryResultData.getProfit())
 
 				.results(predictionsEntities)
 				.created(LocalDateTime.now())
@@ -194,6 +194,7 @@ public class LotteryServiceImpl implements LotteryService {
 							.totalBet(entity.getTotalBet())
 							.totalWin(entity.getTotalWin())
 							.totalLose(entity.getTotalLose())
+							.profit(entity.getProfit())
 
 							.moneyWin(entity.getMoneyWin())
 							.moneyLose(entity.getMoneyLose())
@@ -205,6 +206,19 @@ public class LotteryServiceImpl implements LotteryService {
 		return GetLotteryResultPredictDto.Response.builder()
 				.message("Prediction results retrieved successfully")
 				.data(data)
+				.build();
+	}
+
+	@Override
+	public DeleteLotteryResultPredictDto.Response deleteLotteryPredictionByPhaseId(Long phaseId) {
+		if (Objects.isNull(phaseId)) {
+			return DeleteLotteryResultPredictDto.Response.builder()
+					.message("Phase ID is required")
+					.build();
+		}
+		predictionLotteryRepository.deleteByPhaseId(phaseId);
+		return DeleteLotteryResultPredictDto.Response.builder()
+				.message("Prediction results deleted successfully for phase ID: " + phaseId)
 				.build();
 	}
 }

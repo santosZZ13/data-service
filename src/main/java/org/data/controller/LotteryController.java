@@ -2,6 +2,7 @@ package org.data.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.data.dto.lottery.DeleteLotteryResultPredictDto;
 import org.data.dto.lottery.GetLotteryResultPredictDto;
 import org.data.dto.lottery.PostLotteryResultPredictDto;
 import org.data.dto.lottery.SaveLotteryDto;
@@ -33,5 +34,10 @@ public class LotteryController {
 	public GetLotteryResultPredictDto.Response predictResults() {
 		log.info("Received request to get predicted lottery results");
 		return lotteryService.predictResults();
+	}
+
+	@DeleteMapping("/deletePredict")
+	public DeleteLotteryResultPredictDto.Response deleteLotteryPredictionByPhaseId(@RequestParam Long phaseId) {
+		return lotteryService.deleteLotteryPredictionByPhaseId(phaseId);
 	}
 }

@@ -1,5 +1,6 @@
 package org.data.service;
 
+import org.data.dto.lottery.DeleteLotteryResultPredictDto;
 import org.data.dto.lottery.GetLotteryResultPredictDto;
 import org.data.dto.lottery.PostLotteryResultPredictDto;
 import org.data.dto.lottery.SaveLotteryDto;
@@ -15,6 +16,7 @@ public interface LotteryService {
 
 	PostLotteryResultPredictDto.Response predictResults(PostLotteryResultPredictDto.Request request);
 	GetLotteryResultPredictDto.Response predictResults();
+	DeleteLotteryResultPredictDto.Response deleteLotteryPredictionByPhaseId(Long id);
 
 //	/**
 //	 * Finds lotteries by name.

@@ -42,7 +42,7 @@ public interface PostLotteryResultPredictDto {
 
 		private Double moneyWin;
 		private Double moneyLose;
-		private int profit;
+		private Double profit;
 
 
 		private List<LotteryDto> results;
