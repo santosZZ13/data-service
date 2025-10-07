@@ -93,17 +93,25 @@ pipeline {
 //    }
     }
 
-    post {
-        // If the pipeline is successful, send a Slack notification.
-//        success {
-//            slackSend channel: '#general',
-//                    color: 'good',
-//                    message: "The pipeline ${currentBuild.fullDisplayName} has succeeded."
+//    post {
+//        // If the pipeline is successful, send a Slack notification.
+////        success {
+////            slackSend channel: '#general',
+////                    color: 'good',
+////                    message: "The pipeline ${currentBuild.fullDisplayName} has succeeded."
+////        }
+//
+//        // Cleanup workspace after the build is done
+//        always {
+//            cleanWs()
 //        }
+//    }
 
-        // Cleanup workspace after the build is done
+    post {
         always {
-            cleanWs()
+            node {
+                cleanWs()
+            }
         }
     }
 }
