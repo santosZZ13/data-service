@@ -32,7 +32,6 @@ pipeline {
             }
         }
 
-
         stage('Build and Test') {
             steps {
                 script {
@@ -56,12 +55,10 @@ pipeline {
             }
         }
 
-
         stage('Deploy to GKE') {
             steps {
                 script {
                     dir(DEPLOY_FOLDER) {
-
                         sh '''
                             gcloud auth activate-service-account --key-file=${COMPUTER_SERVICE_ACCOUNT}
                             gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE_KUBERNETES} --project ${PROJECT_ID}
@@ -81,35 +78,11 @@ pipeline {
                 }
             }
         }
-
-//        stage('Deploy to GKE') {
-//            steps {
-//                script {
-//                    dir(DEPLOY_FOLDER) {
-//                       sh 'kubectl --kubeconfig=/home/quangnam130520/.kube/config apply -f data-service-deployment.yaml'
-//                    }
-//                }
-//            }
-//    }
     }
-
-//    post {
-//        // If the pipeline is successful, send a Slack notification.
-////        success {
-////            slackSend channel: '#general',
-////                    color: 'good',
-////                    message: "The pipeline ${currentBuild.fullDisplayName} has succeeded."
-////        }
-//
-//        // Cleanup workspace after the build is done
-//        always {
-//            cleanWs()
-//        }
-//    }
 
     post {
         always {
-            node {
+            node('any') {
                 cleanWs()
             }
         }
