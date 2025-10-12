@@ -22,18 +22,18 @@ spec:
           image: ${ZONE_REPO}-docker.pkg.dev/${PROJECT_ID}/${DATA_SERVICE_REPO}/${DATA_SERVICE_DEPLOYMENT_NAME}:1.0.2
           ports:
             - containerPort: ${DATA_SERVICE_PORT}
-          imagePullPolicy: IfNotPresent
-          env:
-            - name: REDIS_HOST
-              valueFrom:
-                configMapKeyRef:
-                  name: data-service-configmap
-                  key: redis-host
-            - name: REDIS_PORT
-              valueFrom:
-                configMapKeyRef:
-                  name: data-service-configmap
-                  key: redis-port
+          imagePullPolicy: Always
+#          env:
+#            - name: REDIS_HOST
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: data-service-configmap
+#                  key: redis-host
+#            - name: REDIS_PORT
+#              valueFrom:
+#                configMapKeyRef:
+#                  name: data-service-configmap
+#                  key: redis-port
 
 ---
 
