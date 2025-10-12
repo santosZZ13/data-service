@@ -8,12 +8,12 @@ pipeline {
     environment {
         DEPLOY_FOLDER = "${WORKSPACE}/deploy"
         // Kubernetes cluster configuration
-        PROJECT_ID = 'santos-435406'
-        CLUSTER_NAME = "santosk8s"
-        ZONE_KUBERNETES = "asia-east1-a"
+        PROJECT_ID = 'static-anchor-472103-b9'
+        CLUSTER_NAME = "santos-cluster-1"
+        ZONE_KUBERNETES = "us-central1"
         // Docker registry configuration
         ZONE_REPO = "asia-east2"
-        DATA_SERVICE_REPO = "santos-repo"
+        DATA_SERVICE_REPO = "santos"
         // Service account configuration
         SANTOS_REPO_SERVICE_ACCOUNT = credentials('santos-repo-account-service')
         COMPUTER_SERVICE_ACCOUNT = credentials('computer-engine-service-account')
@@ -26,7 +26,7 @@ pipeline {
                     scmVars = checkout scm
                     env.BRANCH_NAME = scmVars.GIT_BRANCH.replaceAll('^origin/', '').replaceAll('/', '-').toLowerCase()
                     env.DATA_SERVICE_DEPLOYMENT_NAME = "data-service-${env.BRANCH_NAME}"
-                    env.DATA_SERVICE_PORT = "8080"
+                    env.DATA_SERVICE_PORT = "8003"
                     env.DATA_SERVICE_REGISTRY_PATH = "${ZONE_REPO}-docker.pkg.dev/${PROJECT_ID}/${DATA_SERVICE_REPO}/${DATA_SERVICE_DEPLOYMENT_NAME}"
                 }
             }
