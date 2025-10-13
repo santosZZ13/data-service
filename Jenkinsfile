@@ -15,7 +15,7 @@ pipeline {
         ZONE_REPO = "asia-east2"
         DATA_SERVICE_REPO = "santos"
         // Service account configuration
-        SANTOS_REPO_SERVICE_ACCOUNT = credentials('santos-repo-account-service')
+        SANTOS_REPO_SERVICE_ACCOUNT = credentials('static-anchor-472103-b9-31bf950c8614')
         COMPUTER_SERVICE_ACCOUNT = credentials('computer-engine-service-account')
     }
 
