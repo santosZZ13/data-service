@@ -89,7 +89,7 @@ pipeline {
     // }
     post {
         always {
-            node {  // Thêm node block
+            node("") {  // Thêm node block
                 cleanWs()
             }
         }
