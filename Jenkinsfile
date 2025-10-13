@@ -80,11 +80,16 @@ pipeline {
         }
     }
 
+    // post {
+    //     always {
+    //         node('any') {
+    //             cleanWs()
+    //         }
+    //     }
+    // }
     post {
         always {
-            node('any') {
-                cleanWs()
-            }
+            cleanWs()  // Không cần node block
         }
     }
 }
