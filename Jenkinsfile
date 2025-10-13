@@ -89,12 +89,8 @@ pipeline {
     // }
     post {
         always {
-            try {
-                node {
-                    cleanWs()
-                }
-            } catch (Exception e) {
-                echo "Cleanup failed: ${e.message}"
+            node {  // Thêm node block
+                cleanWs()
             }
         }
     }
