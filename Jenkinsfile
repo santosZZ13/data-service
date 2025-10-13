@@ -89,7 +89,11 @@ pipeline {
     // }
     post {
         always {
-            cleanWs()  // Không cần node block
+            try {
+                cleanWs()
+            } catch (Exception e) {
+                echo "Cleanup failed: ${e.message}"
+            }
         }
     }
 }
