@@ -90,7 +90,9 @@ pipeline {
     post {
         always {
             try {
-                cleanWs()
+                node {
+                    cleanWs()
+                }
             } catch (Exception e) {
                 echo "Cleanup failed: ${e.message}"
             }
