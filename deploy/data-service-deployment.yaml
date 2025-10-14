@@ -17,6 +17,15 @@ spec:
       labels:
         app: ${DATA_SERVICE_DEPLOYMENT_NAME}
     spec:
+      dnsPolicy: "None"  # Tắt DNS mặc định
+      dnsConfig:
+        nameservers:
+          - "1.1.1.1"
+          - "1.0.0.1"  # Secondary DNS
+        options:
+          - name: "use-vc"  # Enable DNSSEC
+          - name: "edns-client-subnet"
+            value: "0.0.0.0/0"  # Avoid geo-based blocks
       containers:
         - name: data-service
           image: ${ZONE_REPO}-docker.pkg.dev/${PROJECT_ID}/${DATA_SERVICE_REPO}/${DATA_SERVICE_DEPLOYMENT_NAME}:1.0.2
