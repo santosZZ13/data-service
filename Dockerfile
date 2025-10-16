@@ -60,11 +60,10 @@ COPY --from=extract build/target/extracted/application/ ./
 
 # Configure Squid proxy (basic setup)
 COPY squid.conf /etc/squid/squid.conf
+COPY entrypoint.sh /entrypoint.sh
 
 # Expose ports
 EXPOSE 8003
 EXPOSE 3128
 
-CMD mkdir -p /var/run/squid && chown appuser:appuser /var/run/squid && \
-    service squid start && \
-    java org.springframework.boot.loader.launch.JarLauncher
+CMD ["/entrypoint.sh"]
