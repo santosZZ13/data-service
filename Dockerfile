@@ -39,16 +39,17 @@ FROM eclipse-temurin:17-jre-jammy AS final
 
 ARG UID=10001
 RUN apt-get update && apt-get install -y squid && \
-    mkdir -p /home/appuser/squid-run && \
-    chown ${UID}:${UID} /home/appuser/squid-run && \
     adduser \
     --disabled-password \
     --gecos "" \
-    --home "/nonexistent" \
+    --disabled-login \
     --shell "/sbin/nologin" \
     --no-create-home \
     --uid "${UID}" \
-    appuser
+    appuser && \
+    mkdir -p /home/appuser/squid-run && \
+    chown appuser:appuser /home/appuser/squid-run
+
 USER appuser
 
 # Copy the executable layers
@@ -66,4 +67,4 @@ EXPOSE 3128
 
 CMD mkdir -p /var/run/squid && chown appuser:appuser /var/run/squid && \
     service squid start && \
-    java -jar app.jar
+    java org.springframework.boot.loader.launch.JarLauncher
