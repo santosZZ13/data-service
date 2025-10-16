@@ -39,6 +39,8 @@ FROM eclipse-temurin:17-jre-jammy AS final
 
 ARG UID=10001
 RUN apt-get update && apt-get install -y squid && \
+    mkdir -p /home/appuser/squid-run && \
+    chown ${UID}:${UID} /home/appuser/squid-run && \
     adduser \
     --disabled-password \
     --gecos "" \
@@ -48,10 +50,6 @@ RUN apt-get update && apt-get install -y squid && \
     --uid "${UID}" \
     appuser
 USER appuser
-
-# Create a custom directory for Squid runtime
-RUN mkdir -p /home/appuser/squid-run && \
-    chown appuser:appuser /home/appuser/squid-run
 
 # Copy the executable layers
 COPY --from=extract build/target/extracted/dependencies/ ./
