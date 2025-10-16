@@ -58,6 +58,8 @@ COPY --from=extract build/target/extracted/application/ ./
 # Configure Squid proxy (basic setup)
 COPY squid.conf /etc/squid/squid.conf
 
-EXPOSE 8003 3128  # App port (8003) + Proxy port (3128)
+#EXPOSE 8003 3128  # App port (8003) + Proxy port (3128)
+EXPOSE 8003  # App port
+EXPOSE 3128  # Proxy port
 
 CMD service squid start && java -jar app.jar
