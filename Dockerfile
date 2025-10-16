@@ -49,11 +49,15 @@ RUN apt-get update && apt-get install -y squid && \
     appuser
 USER appuser
 
+# Create a custom directory for Squid runtime
+RUN mkdir -p /home/appuser/squid-run && \
+    chown appuser:appuser /home/appuser/squid-run
+
 # Copy the executable layers
-COPY --from=extract build/target/extracted/dependencies/ ./ 
-COPY --from=extract build/target/extracted/spring-boot-loader/ ./ 
-COPY --from=extract build/target/extracted/snapshot-dependencies/ ./ 
-COPY --from=extract build/target/extracted/application/ ./ 
+COPY --from=extract build/target/extracted/dependencies/ ./
+COPY --from=extract build/target/extracted/spring-boot-loader/ ./
+COPY --from=extract build/target/extracted/snapshot-dependencies/ ./
+COPY --from=extract build/target/extracted/application/ ./
 
 # Configure Squid proxy (basic setup)
 COPY squid.conf /etc/squid/squid.conf
@@ -62,4 +66,6 @@ COPY squid.conf /etc/squid/squid.conf
 EXPOSE 8003
 EXPOSE 3128
 
-CMD service squid start && java -jar app.jar
+CMD mkdir -p /var/run/squid && chown appuser:appuser /var/run/squid && \
+    service squid start && \
+    java -jar app.jar
