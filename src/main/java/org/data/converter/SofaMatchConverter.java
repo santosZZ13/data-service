@@ -2,8 +2,8 @@ package org.data.converter;
 
 import lombok.extern.log4j.Log4j2;
 import org.data.dto.common.sofa.SofaMatchDto;
+import org.data.external.sofa.model.SofaResponse;
 import org.data.persistent.entity.SofaScheduledMatchEntity;
-import org.data.external.sofa.model.SofaMatchResponseDetail;
 import org.data.util.NormalizeTeamName;
 import org.data.util.utils.DateUtils;
 
@@ -11,7 +11,7 @@ import java.time.ZonedDateTime;
 
 @Log4j2
 public class SofaMatchConverter {
-	public static SofaScheduledMatchEntity toEntity(SofaMatchResponseDetail dto) {
+	public static SofaScheduledMatchEntity toEntity(SofaResponse.SofaMatchResponseDetail dto) {
 		if (dto == null) {
 			return null;
 		}

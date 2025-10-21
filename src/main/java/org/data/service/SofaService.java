@@ -4,8 +4,9 @@ import org.data.dto.sf.GetScheduledMatchByName;
 import org.data.dto.sf.GetScheduledMatchesByName;
 import org.data.dto.sf.GetSofaMatchesByDate;
 import org.data.dto.sf.SaveScheduledMatchDto;
+import org.data.response.ApiResponse;
 
-public interface SofaScheduledMatchService {
+public interface SofaService {
 	/**
 	 * Saves scheduled matches.
 	 *
@@ -24,5 +25,5 @@ public interface SofaScheduledMatchService {
 
 	GetScheduledMatchByName.Response findMatchByName(String name);
 
-	GetSofaMatchesByDate.Response getMatchesByDate(String date);
+	ApiResponse<GetSofaMatchesByDate.Response> getMatchesByDate(String date);
 }

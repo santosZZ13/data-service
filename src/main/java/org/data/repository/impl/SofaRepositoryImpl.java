@@ -5,13 +5,13 @@ import lombok.extern.log4j.Log4j2;
 import org.data.converter.SofaMatchConverter;
 import org.data.dto.common.sofa.SofaMatchDto;
 import org.data.dto.common.sofa.TeamDto;
+import org.data.external.sofa.model.SofaResponse;
 import org.data.persistent.entity.SofaScheduledMatchEntity;
-import org.data.persistent.repository.SofaScheduledMatchMongoRepository;
+import org.data.persistent.repository.SofaMongoRepository;
 import org.data.repository.SofaRepository;
 import org.data.repository.TeamRepository;
-import org.data.external.sofa.model.SofaMatchResponseDetail;
 import org.data.util.NormalizeTeamName;
-import org.data.external.sofa.service.SofaApiServiceImpl;
+import org.data.external.sofa.service.SofaApi;
 import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.*;
@@ -25,8 +25,9 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 @Log4j2
 public class SofaRepositoryImpl implements SofaRepository {
-	private final SofaScheduledMatchMongoRepository sofaScheduledMatchMongoRepository;
-	private final SofaApiServiceImpl sofaApiServiceImpl;
+
+	private final SofaMongoRepository sofaMongoRepository;
+	private final SofaApi sofaApi;
 	private final TeamRepository teamRepository;
 	private final MongoTemplate mongoTemplate;
 
@@ -36,17 +37,17 @@ public class SofaRepositoryImpl implements SofaRepository {
 	 * @param matchesDto
 	 */
 	@Override
-	public void saveSofaScheduledMatches(List<SofaMatchResponseDetail> matchesDto) {
+	public void saveToDB(List<SofaResponse.SofaMatchResponseDetail> matchesDto) {
 		log.info("Starting to save {} matches.", matchesDto.size());
 		if (matchesDto.isEmpty()) {
 			log.warn("No matches to save.");
 			return;
 		}
 //		saveTeamDto(matchesDto);
-		Map<Integer, SofaMatchResponseDetail> uniqueMatchesDto = matchesDto.stream()
+		Map<Integer, SofaResponse.SofaMatchResponseDetail> uniqueMatchesDto = matchesDto.stream()
 				.filter(matchDto -> matchDto.getMatchId() != null)
 				.collect(Collectors.toMap(
-						SofaMatchResponseDetail::getMatchId,
+						SofaResponse.SofaMatchResponseDetail::getMatchId,
 						matchDto -> matchDto,
 						(existing, replacement) -> existing, LinkedHashMap::new)
 				);
@@ -67,7 +68,7 @@ public class SofaRepositoryImpl implements SofaRepository {
 				);
 
 		List<SofaScheduledMatchEntity> entitiesToSave = new ArrayList<>();
-		for (SofaMatchResponseDetail sofaMatchDto : uniqueMatchesDto.values()) {
+		for (SofaResponse.SofaMatchResponseDetail sofaMatchDto : uniqueMatchesDto.values()) {
 			SofaScheduledMatchEntity matchEntityFromDto = SofaMatchConverter.toEntity(sofaMatchDto);
 			SofaScheduledMatchEntity existingEntityMatch = existingMatchEntitiesMap.get(sofaMatchDto.getMatchId());
 
@@ -282,9 +283,9 @@ public class SofaRepositoryImpl implements SofaRepository {
 	}
 
 	@Override
-	public List<SofaMatchResponseDetail> getMatchesByDate(String date) {
-		List<SofaMatchResponseDetail> sofaMatchByDate = sofaApiServiceImpl.getMatchesByDate(date);
-		saveSofaScheduledMatches(sofaMatchByDate);
+	public List<SofaResponse.SofaMatchResponseDetail> getMatchesByDate(String date) {
+		List<SofaResponse.SofaMatchResponseDetail> sofaMatchByDate = sofaApi.getMatchesByDate(date);
+//		saveToDB(sofaMatchByDate);
 		return sofaMatchByDate;
 	}
 

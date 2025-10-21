@@ -6,8 +6,7 @@ import org.data.cache.SofaCacheId;
 import org.data.config.ApiConfig;
 import org.data.exception.ExternalServiceException;
 import org.data.exception.TeamNotFoundException;
-import org.data.external.sofa.model.SofaMatchResponse;
-import org.data.external.sofa.model.SofaMatchResponseDetail;
+import org.data.external.sofa.model.SofaResponse;
 import org.data.util.request.RestClient;
 import org.data.util.response.ErrorCodeRegistry;
 import org.springframework.http.HttpMethod;
@@ -24,12 +23,11 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
-public class SofaApiServiceImpl implements SofaApiService {
-	private final RestClient<SofaMatchResponse> restClient;
+public class SofaApi implements SofaApiService {
+	private final RestClient<SofaResponse.Response> restClient;
 	private final ApiConfig apiConfig;
 	private final SofaCacheByDate sofaCacheByDate;
 	private final SofaCacheId sofaCacheByTeamId;
@@ -47,19 +45,19 @@ public class SofaApiServiceImpl implements SofaApiService {
 			backoff = @Backoff(delay = 1000, multiplier = 1.5)
 	)
 	@Override
-	public List<SofaMatchResponseDetail> getMatchesByDate(String date) {
+	public List<SofaResponse.SofaMatchResponseDetail> getMatchesByDate(String date) {
 		try {
 
-			List<SofaMatchResponseDetail> cachedMatchesByDate = sofaCacheByDate.getMatchesByDateCache(date);
+			List<SofaResponse.SofaMatchResponseDetail> cachedMatchesByDate = sofaCacheByDate.getMatchesByDateCache(date);
 
 			if (Objects.isNull(cachedMatchesByDate)) {
 				String scheduledEventUrl = apiConfig.getSofaBaseUrl() + String.format(SCHEDULED_EVENTS_PATTERN, date);
 				String scheduledEventInverseUrl = apiConfig.getSofaBaseUrl() + String.format(SCHEDULED_EVENTS_INVERSE_PATTERN, date);
 
-				SofaMatchResponse sofaMatchResponse = restClient.execute(scheduledEventUrl, HttpMethod.GET, null, null, SofaMatchResponse.class);
-				SofaMatchResponse sofaMatchInverseResponse = restClient.execute(scheduledEventInverseUrl, HttpMethod.GET, null, null, SofaMatchResponse.class);
+				SofaResponse.Response sofaMatchResponse = restClient.execute(scheduledEventUrl, HttpMethod.GET, null, null, SofaResponse.Response.class);
+				SofaResponse.Response sofaMatchInverseResponse = restClient.execute(scheduledEventInverseUrl, HttpMethod.GET, null, null, SofaResponse.Response.class);
 
-				List<SofaMatchResponseDetail> sofaMatchResponseDetail = new ArrayList<>();
+				List<SofaResponse.SofaMatchResponseDetail> sofaMatchResponseDetail = new ArrayList<>();
 				if (!Objects.isNull(sofaMatchResponse) && Objects.nonNull(sofaMatchResponse.getEvents())) {
 					sofaMatchResponseDetail.addAll(sofaMatchResponse.getEvents());
 				}
@@ -68,7 +66,7 @@ public class SofaApiServiceImpl implements SofaApiService {
 					sofaMatchResponseDetail.addAll(sofaMatchInverseResponse.getEvents());
 				}
 
-				List<SofaMatchResponseDetail> matchesByDate = sofaMatchResponseDetail.stream()
+				List<SofaResponse.SofaMatchResponseDetail> matchesByDate = sofaMatchResponseDetail.stream()
 						.filter(event -> {
 							if (event.getStartTimestamp() == null) {
 								return false;
@@ -88,14 +86,14 @@ public class SofaApiServiceImpl implements SofaApiService {
 	}
 
 	@Override
-	public Map<Integer, List<SofaMatchResponseDetail>> getHistoriesByTeamIds(Set<Integer> teamIds) {
-		Map<Integer, List<SofaMatchResponseDetail>> teamHistories = new HashMap<>();
+	public Map<Integer, List<SofaResponse.SofaMatchResponseDetail>> getHistoriesByTeamIds(Set<Integer> teamIds) {
+		Map<Integer, List<SofaResponse.SofaMatchResponseDetail>> teamHistories = new HashMap<>();
 		List<CompletableFuture<Void>> futures = new ArrayList<>();
 
 		for (Integer teamId : teamIds) {
 			CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
 				try {
-					List<SofaMatchResponseDetail> history = sofaCacheByTeamId.getTeamHistory(teamId);
+					List<SofaResponse.SofaMatchResponseDetail> history = sofaCacheByTeamId.getTeamHistory(teamId);
 					if (history == null) {
 						history = getMatchesByIdAndLimit(teamId, 10);
 						if (history == null) {
@@ -106,6 +104,11 @@ public class SofaApiServiceImpl implements SofaApiService {
 						}
 						sofaCacheByTeamId.putTeamHistory(teamId, history);
 					}
+//					else {
+//						// Cache hit, sử dụng dữ liệu từ cache
+//						teamHistories.put(teamId, history);
+//						return;
+//					}
 					synchronized (teamHistories) {
 						teamHistories.put(teamId, history);
 					}
@@ -142,22 +145,22 @@ public class SofaApiServiceImpl implements SofaApiService {
 			backoff = @Backoff(delay = 1000, multiplier = 1.5)
 	)
 	@Override
-	public List<SofaMatchResponseDetail> getMatchesByIdAndLimit(Integer teamId, Integer limit) {
+	public List<SofaResponse.SofaMatchResponseDetail> getMatchesByIdAndLimit(Integer teamId, Integer limit) {
 		try {
 			String scheduledEventTeamUrl = apiConfig.getSofaBaseUrl() + String.format(SCHEDULED_EVENTS_TEAM_PATTERN, teamId, 0);
 			String scheduledEventTeamInverseUrl = apiConfig.getSofaBaseUrl() + String.format(SCHEDULED_EVENTS_TEAM_INVERSE_PATTERN, teamId, 0);
 			// Gọi API cho endpoint 1
-			SofaMatchResponse sofaMatchResponse = restClient.execute(
+			SofaResponse.Response sofaMatchResponse = restClient.execute(
 					scheduledEventTeamUrl,
 					HttpMethod.GET,
 					null,
 					null,
-					SofaMatchResponse.class
+					SofaResponse.Response.class
 			);
 			return sofaMatchResponse.getEvents().stream()
 					.filter(match -> match.getStatus() != null && Objects.equals(match.getStatus().getType(), "finished"))
 					.filter(match -> match.getStartTimestamp() != null)
-					.sorted(Comparator.comparingLong(SofaMatchResponseDetail::getStartTimestamp).reversed())
+					.sorted(Comparator.comparingLong(SofaResponse.SofaMatchResponseDetail::getStartTimestamp).reversed())
 					.limit(limit == null ? Integer.MAX_VALUE : limit)
 					.toList();
 		} catch (Exception e) {
@@ -167,7 +170,7 @@ public class SofaApiServiceImpl implements SofaApiService {
 
 
 	@Recover
-	public List<SofaMatchResponseDetail> recoverGetSofaMatchByDate(org.springframework.web.client.RestClientException e, String date) {
+	public List<SofaResponse.SofaMatchResponseDetail> recoverGetSofaMatchByDate(org.springframework.web.client.RestClientException e, String date) {
 		throw new ExternalServiceException(
 				ErrorCodeRegistry.EXTERNAL_SERVICE_ERROR,
 				"Failed to fetch matches from Sofa API for date: " + date,
@@ -176,7 +179,7 @@ public class SofaApiServiceImpl implements SofaApiService {
 	}
 
 	@Recover
-	public List<SofaMatchResponseDetail> recoverGetSofaTeamId(org.springframework.web.client.RestClientException e, Integer teamId, Integer limit) {
+	public List<SofaResponse.SofaMatchResponseDetail> recoverGetSofaTeamId(org.springframework.web.client.RestClientException e, Integer teamId, Integer limit) {
 		throw new ExternalServiceException(
 				ErrorCodeRegistry.EXTERNAL_SERVICE_ERROR,
 				String.format("Failed to fetch history for team ID: %d", teamId),

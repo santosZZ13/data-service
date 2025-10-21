@@ -3,7 +3,7 @@ package org.data.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.AllArgsConstructor;
-import org.data.external.sofa.model.SofaMatchResponseDetail;
+import org.data.external.sofa.model.SofaResponse;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 @AllArgsConstructor
 public class SofaCacheId {
-	private final Cache<Integer, List<SofaMatchResponseDetail>> teamHistoryCache;
+	private final Cache<Integer, List<SofaResponse.SofaMatchResponseDetail>> teamHistoryCache;
 
 	public SofaCacheId() {
 		this.teamHistoryCache = Caffeine.newBuilder()
@@ -21,11 +21,11 @@ public class SofaCacheId {
 				.build();
 	}
 
-	public List<SofaMatchResponseDetail> getTeamHistory(Integer teamId) {
+	public List<SofaResponse.SofaMatchResponseDetail> getTeamHistory(Integer teamId) {
 		return teamHistoryCache.getIfPresent(teamId);
 	}
 
-	public void putTeamHistory(Integer teamId, List<SofaMatchResponseDetail> history) {
+	public void putTeamHistory(Integer teamId, List<SofaResponse.SofaMatchResponseDetail> history) {
 		teamHistoryCache.put(teamId, history);
 	}
 }
