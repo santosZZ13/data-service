@@ -42,16 +42,23 @@ public class TeamAnalysis {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	public static class TeamStats {
-		private double over15Rate;
-		private double over25Rate;
-		private double scoringRate; // Tỷ lệ trận đội ghi bàn
+
 		private double firstHalfOver05Rate;
 		private double firstHalfOver15Rate;
 		private double firstHalfScoringRate; // Tỷ lệ trận đội ghi bàn hiệp 1
+
+		private double over05Rate;
+		private double over15Rate;
+		private double over25Rate;
+
+		private double scoringRate; // Tỷ lệ trận đội ghi bàn
+
 		private double averageGoalsScored;
 		private double averageGoalsConceded;
+
 		private double firstHalfAverageGoalsScored;
 		private double firstHalfAverageGoalsConceded;
+
 		private int wins;
 		private int draws;
 		private int losses;
