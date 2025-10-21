@@ -3,6 +3,7 @@ package org.data.external.sofa.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.data.dto.ex.GetAnalystDto;
+import org.data.external.sofa.analysis.StatsAnalysis;
 import org.data.external.sofa.model.MatchAnalysis;
 import org.data.external.sofa.model.SofaResponse;
 import org.data.external.sofa.model.TeamAnalysis;
@@ -17,6 +18,9 @@ import static org.data.util.analyzer.MatchAnalyzer.fetchHeadToHead;
 @Log4j2
 public class SofaAnalysisImpl implements SofaAnalysis {
 
+	private final StatsAnalysis statsAnalysis;
+
+
 	@Override
 	public TeamAnalysis getTeamAnalysis(Integer teamId, List<SofaResponse.SofaMatchResponseDetail> histories) {
 		TeamAnalysis teamAnalysis = null;
@@ -30,7 +34,14 @@ public class SofaAnalysisImpl implements SofaAnalysis {
 //						.draws(0)
 						.build();
 			} else {
-
+				TeamAnalysis.TeamStats teamStas = statsAnalysis.getTeamStas(histories, teamId);
+				List<TeamAnalysis.RecentMatch> recentMatches = statsAnalysis.getRecentMatches(histories, teamId);
+				teamAnalysis = TeamAnalysis.builder()
+						.teamId(teamId)
+						.totalMatchesAnalyzed(histories.size())
+						.stats(teamStas)
+						.recentMatches(recentMatches)
+						.build();
 			}
 			return teamAnalysis;
 		} catch (RuntimeException e) {
