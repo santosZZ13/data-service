@@ -67,8 +67,9 @@ public class SofaServiceImpl implements SofaService {
 				.collect(Collectors.toSet());
 
 		Map<Integer, List<SofaResponse.SofaMatchResponseDetail>> teamHistories = sofaApiService.getHistoriesByTeamIds(teamIds);
-		List<MatchAnalysis> analyzedMatches = new ArrayList<>();
+//		List<MatchAnalysis> analyzedMatches = new ArrayList<>();
 
+		List<GetSofaMatchesByDate.SofaMatchDetail> detailedMatches = new ArrayList<>();
 
 		for (SofaResponse.SofaMatchResponseDetail sofaDetail : matchesByDate) {
 
@@ -87,7 +88,15 @@ public class SofaServiceImpl implements SofaService {
 			TeamAnalysis awayAnalysis = sofaAnalysis.getTeamAnalysis(sofaAwayId, historiesForAway);
 			MatchAnalysis matchAnalysis = sofaAnalysis.getMatchAnalysis(homeAnalysis, awayAnalysis);
 
-			analyzedMatches.add(matchAnalysis);
+//			analyzedMatches.add(matchAnalysis);
+			GetSofaMatchesByDate.SofaMatchDetail detailedMatch = GetSofaMatchesByDate.SofaMatchDetail.builder()
+					.match(sofaDetail)
+					.homeTeamAnalysis(homeAnalysis)
+					.awayTeamAnalysis(awayAnalysis)
+					.matchAnalysis(matchAnalysis)
+					.build();
+
+			detailedMatches.add(detailedMatch);
 		}
 
 
@@ -102,7 +111,7 @@ public class SofaServiceImpl implements SofaService {
 		);
 
 		GetSofaMatchesByDate.Response response = GetSofaMatchesByDate.Response.builder()
-				.matches(matchesByDate)
+				.matchDetails(detailedMatches)
 				.ended(ended.get())
 				.size(matchesByDate.size())
 				.build();
