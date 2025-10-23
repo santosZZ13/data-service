@@ -71,6 +71,7 @@ public class SofaServiceImpl implements SofaService {
 
 
 		for (SofaResponse.SofaMatchResponseDetail sofaDetail : matchesByDate) {
+
 			Integer sofaHomeId = sofaDetail.getHomeTeam().getId();
 			Integer sofaAwayId = sofaDetail.getAwayTeam().getId();
 
@@ -84,8 +85,8 @@ public class SofaServiceImpl implements SofaService {
 
 			TeamAnalysis homeAnalysis = sofaAnalysis.getTeamAnalysis(sofaHomeId, historiesForHome);
 			TeamAnalysis awayAnalysis = sofaAnalysis.getTeamAnalysis(sofaAwayId, historiesForAway);
-
 			MatchAnalysis matchAnalysis = sofaAnalysis.getMatchAnalysis(homeAnalysis, awayAnalysis);
+
 			analyzedMatches.add(matchAnalysis);
 		}
 

@@ -30,8 +30,8 @@ public class MatchAnalysis {
 	@Data
 	@AllArgsConstructor
 	@NoArgsConstructor
-	class HeadToHead {
-		private Integer matchId; // ID trận đấu
+	public static class HeadToHead {
+		private Integer matchId;
 		private String result; // Kết quả (VD: "3-2")
 		private Integer totalGoals; // Tổng bàn thắng
 		private Boolean over15; // Trận có tài 1.5?
