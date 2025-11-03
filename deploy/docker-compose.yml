@@ -5,7 +5,11 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_OPTS: "-Dzookeeper.disableCgroupMetrics=true"   # ← ĐÚNG CÁCH
+    command: >
+      sh -c "
+      export ZOOKEEPER_OPTS='-Dzookeeper.disableCgroupMetrics=true';
+      exec /etc/confluent/docker/run
+      "
     networks:
       - kafka-net
 
