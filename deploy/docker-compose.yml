@@ -7,7 +7,7 @@ services:
       - "9092:9092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: deploy-zookeeper-1:2181   # ← ĐÃ SỬA
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181   # ← DÙNG TÊN SERVICE
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://35.188.212.247:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
@@ -32,7 +32,7 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
-    container_name: deploy-zookeeper-1   # ← ĐỂ RÕ RÀNG
+    container_name: deploy-zookeeper-1   # Tùy chọn, không ảnh hưởng DNS
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
