@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.8'  # Giữ nguyên, ignore warning
 
 services:
   kafka:
@@ -6,12 +6,14 @@ services:
     container_name: kafka
     ports:
       - "9092:9092"
+      - "29092:29092"  # Thêm port internal
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: EXTERNAL://:9092,INTERNAL://:29092  # Dual listeners
+      KAFKA_ADVERTISED_LISTENERS: EXTERNAL://localhost:9092,INTERNAL://kafka:29092  # Advertise cho external/internal
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: EXTERNAL:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
     depends_on:
       - zookeeper
     networks:
@@ -24,7 +26,7 @@ services:
       - "8081:8080"
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092  # Đổi sang port internal
     depends_on:
       - kafka
     networks:
@@ -32,6 +34,9 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper  # Thêm container_name cho consistency
+    ports:
+      - "2181:2181"  # Expose nếu cần connect từ host
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
