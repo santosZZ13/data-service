@@ -84,19 +84,31 @@ public class SofaServiceImpl implements SofaService {
 			List<SofaResponse.SofaMatchResponseDetail> historiesForHome = teamHistories.getOrDefault(sofaHomeId, List.of());
 			List<SofaResponse.SofaMatchResponseDetail> historiesForAway = teamHistories.getOrDefault(sofaAwayId, List.of());
 
-			TeamAnalysis homeAnalysis = sofaAnalysis.getTeamAnalysis(sofaHomeId, historiesForHome);
-			TeamAnalysis awayAnalysis = sofaAnalysis.getTeamAnalysis(sofaAwayId, historiesForAway);
-			MatchAnalysis matchAnalysis = sofaAnalysis.getMatchAnalysis(homeAnalysis, awayAnalysis);
-
+			if (historiesForHome.isEmpty() || historiesForAway.isEmpty()) {
+				log.warn("No history found for home team ID: {}", sofaHomeId);
+				GetSofaMatchesByDate.SofaMatchDetail detailedMatch = GetSofaMatchesByDate.SofaMatchDetail.builder()
+						.match(sofaDetail)
+						.homeTeamAnalysis(null)
+						.awayTeamAnalysis(null)
+						.matchAnalysis(null)
+						.build();
+				detailedMatches.add(detailedMatch);
+			} else {
+				TeamAnalysis homeAnalysis = sofaAnalysis.getTeamAnalysis(sofaHomeId, historiesForHome);
+				TeamAnalysis awayAnalysis = sofaAnalysis.getTeamAnalysis(sofaAwayId, historiesForAway);
+				MatchAnalysis matchAnalysis = sofaAnalysis.getMatchAnalysis(homeAnalysis, awayAnalysis);
 //			analyzedMatches.add(matchAnalysis);
-			GetSofaMatchesByDate.SofaMatchDetail detailedMatch = GetSofaMatchesByDate.SofaMatchDetail.builder()
-					.match(sofaDetail)
-					.homeTeamAnalysis(homeAnalysis)
-					.awayTeamAnalysis(awayAnalysis)
-					.matchAnalysis(matchAnalysis)
-					.build();
+				GetSofaMatchesByDate.SofaMatchDetail detailedMatch = GetSofaMatchesByDate.SofaMatchDetail.builder()
+						.match(sofaDetail)
+						.homeTeamAnalysis(homeAnalysis)
+						.awayTeamAnalysis(awayAnalysis)
+						.matchAnalysis(matchAnalysis)
+						.build();
 
-			detailedMatches.add(detailedMatch);
+				detailedMatches.add(detailedMatch);
+			}
+
+
 		}
 
 
