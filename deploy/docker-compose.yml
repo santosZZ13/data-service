@@ -1,8 +1,16 @@
-version: '3.8'
-
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: deploy-zookeeper-1
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - kafka-net
+
   kafka:
     image: confluentinc/cp-kafka:7.3.0
+    container_name: deploy-kafka-1
     ports:
       - "9092:9092"
     environment:
@@ -27,15 +35,6 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     depends_on:
       - kafka
-    networks:
-      - kafka-net
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.3.0
-    container_name: deploy-zookeeper-1   # Tùy chọn, không ảnh hưởng DNS
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
     networks:
       - kafka-net
 
