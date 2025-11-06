@@ -1,0 +1,89 @@
+Sequence diagram for fetching sofa matches by date with caching mechanism (with analytics histories matches).
+
+1. Fetch matches for a specific date from Sofa API or cache (2 calls max).
+2. Caching mechanism:
+    * If cache hit, return cached data.
+    * If cache miss, query Sofa API, store in cache, and return data.
+3. Extract unique match IDs from fetched data.
+    * Steps:
+        1. Not fetched history matches immediately.
+        2. Checking DB/Cache for existing history matches using team id in unique match IDs.
+        3. For cache misses (outdated/missing):
+            - return partial data: Matches list with analytics placeholders (null/processing)
+            - At the same time, send job to Kafka for processing missing history matches for teamIds missing in cache/DB.
+
+4. Background job processing:
+    * Consume Kafka jobs for missing history matches.
+    * Fetch history matches from Sofa API.
+    * Store fetched history matches in DB/Cache.
+    * Update analytics placeholders in matches list.
+
+    1. Producer (From API):
+        - Identify missing history matches.
+        - Send message to Kafka Topic (for example: "team-histories-fetch") with teamIds.
+        - Message Payload Example:
+          {
+            "teamIds": [123, 456, 789], // List of team IDs needing history matches
+            "date": "2024-01-01" // Date for which matches were requested
+            requestId: "uuid-v4" // UUID for tracing
+          }
+    2. Consumer (Background Worker):
+        - Listen to "team-histories-fetch" Kafka Topic.
+        - Fetch history matches from Sofa API for each teamId.
+        - Store fetched history matches in DB/Cache. (team_histories collection/table)
+        - Update analytics placeholders in matches list.
+        - ** (optional) Send notification via WebSocket/Push Notification if needed. (for example: /api/sofa/analytics-updated?requestId=uuid-v4 each 5-10 seconds to check status)
+    3. Polling/Update to Client (optional):
+        - Client can poll /api/sofa/analytics-updated?requestId=uuid-v4 to check if analytics data is ready.
+        - Once ready, client can fetch updated matches with analytics data.
+        - Or use WebSocket/Push Notification to notify client when analytics data is ready.
+
+5. Handle Update & Edge Cases
+    1. Outdate data: add field "lastUpdated" timestamp in cache/DB to track data freshness. >1 day consider outdated. (re-queue to refresh)
+    2. Error Handling: if fetch fail(rate limit, network), retry in consumer (use Kafka retry topic or Spring Retry)
+    3. Pre-warming Cache: periodically pre-fetch popular team histories to reduce latency.
+    4. Scale: Consumer can run multiple instances to handle high volume of requests.
+Questions
+1. How to check cache hit or miss?
+
+
+
+@startuml
+'https://plantuml.com/sequence-diagram
+
+'autonumber
+
+actor User
+participant "DataService" as DataService
+participant "Caching" as Cache
+participant "Database" as DB
+participant "Sofa API" as Sofa
+participant "Kafka Service" as Kafka
+
+
+
+User -> DataService: GET /api/sofa/matches?date=YYYY-MM-DD
+DataService -> Cache: Check cache for matches on date
+'alt Cache Hit
+'    Caching --> DataService: Return cached matches
+'else Cache Miss
+'    Caching --> DataService: No cached data
+'    DataService -> Database: Query matches for date
+'    Database --> DataService: Return matches from DB
+'    DataService -> Caching: Store matches in cache
+'    Caching --> DataService: Acknowledgment
+'end alt
+'DataService --> User: 200 OK (matches[])
+
+
+
+'== Initialization ==
+'
+'Alice -> Bob: Authentication Request
+'Bob --> Alice: Authentication Response
+'
+'== Repetition ==
+'
+'Alice -> Bob: Another authentication Request
+'Alice <-- Bob: another authentication Response
+@enduml
