@@ -49,41 +49,57 @@ Questions
 
 
 @startuml
-'https://plantuml.com/sequence-diagram
-
-'autonumber
-
 actor User
-participant "DataService" as DataService
-participant "Caching" as Cache
-participant "Database" as DB
+participant "Client" as FE
+participant "DataService" as API
+participant "Redis" as Cache
+participant "MongoDB" as DB
 participant "Sofa API" as Sofa
-participant "Kafka Service" as Kafka
+participant "Kafka" as Kafka
+participant "Consumer" as Worker
 
+User -> FE: GET /api/sofa/matches?date=2025-11-09
+FE -> API: GET /matches?date=...
+API -> Cache: GET matches:date:2025-11-09
+alt Cache Miss
+    Cache --> API: null
+    API -> Sofa: GET scheduled-events + inverse
+    Sofa --> API: 6000 matches
+    API -> Cache: SET matches:date:2025-11-09
+    API -> DB: saveToDB()
+end
 
+API -> API: extract teamIds → 1000 IDs
+loop for each teamId
+    API -> Cache: GET team:history:123
+    alt Cache Miss
+        Cache --> API: null
+        API -> DB: findByTeamId(123)
+        alt DB Miss or Outdated
+            DB --> API: null or old
+            API -> API: add to missingTeamIds
+        else DB Hit
+            DB --> API: history
+            API -> Cache: SET team:history:123
+        end
+    end
+end
 
-User -> DataService: GET /api/sofa/matches?date=YYYY-MM-DD
-DataService -> Cache: Check cache for matches on date
-'alt Cache Hit
-'    Caching --> DataService: Return cached matches
-'else Cache Miss
-'    Caching --> DataService: No cached data
-'    DataService -> Database: Query matches for date
-'    Database --> DataService: Return matches from DB
-'    DataService -> Caching: Store matches in cache
-'    Caching --> DataService: Acknowledgment
-'end alt
-'DataService --> User: 200 OK (matches[])
+alt missingTeamIds not empty
+    API -> Kafka: SEND team-histories-fetch {requestId, date, teamIds}
+    API --> FE: 200 {status: "processing", requestId, matches[], analysis: null}
+else
+    API -> API: analyze all matches
+    API --> FE: 200 {status: "completed", matches + analysis}
+end
 
+Kafka -> Worker: consume job
+Worker -> Sofa: getHistoriesByTeamIds()
+Sofa --> Worker: histories
+Worker -> Worker: analyze
+Worker -> DB: save team_histories
+Worker -> Cache: SET team:history:*
 
+note right: Client poll /analysis/status?requestId=... every 5s
 
-'== Initialization ==
-'
-'Alice -> Bob: Authentication Request
-'Bob --> Alice: Authentication Response
-'
-'== Repetition ==
-'
-'Alice -> Bob: Another authentication Request
-'Alice <-- Bob: another authentication Response
 @enduml
