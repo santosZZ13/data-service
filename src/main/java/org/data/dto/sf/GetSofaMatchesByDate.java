@@ -9,6 +9,7 @@ import org.data.external.sofa.model.SofaResponse;
 import org.data.external.sofa.model.TeamAnalysis;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface GetSofaMatchesByDate {
 
@@ -25,6 +26,8 @@ public interface GetSofaMatchesByDate {
 	@AllArgsConstructor
 	@NoArgsConstructor
 	class Response {
+		private String requestId;
+		private String status;
 		private int size;
 		private int ended;
 		private List<SofaMatchDetail> matchDetails;

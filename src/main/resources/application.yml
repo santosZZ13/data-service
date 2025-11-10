@@ -21,17 +21,42 @@ spring:
   #    hikari:
   #      connection-timeout: 60000
   #      maximum-pool-size: 5
-#  cache:
-#    type: redis
+  cache:
+    type: redis
+    redis:
+      time-to-live: 86400000  # 24h
+      key-prefix:
+        sofa:
+      use-key-prefix: true
+
+  spring:
+    kafka:
+      bootstrap-servers: localhost:9092  # Hoặc cloud Kafka URL
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      consumer:
+        group-id: sofa-histories-group
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: '*'  # Để deserialize custom objects
 
   data:
     mongodb:
       database: ${MONGODB_DB:football}
       uri: mongodb+srv://${MONGODB_USERNAME:quangnam130520}:${MONGODB_PW:2eixDOgAx1TVcXqp}@${MONGODB_HOST:cluster0.fwoaemp.mongodb.net}/
-#    redis:
-#      host: ${REDIS_HOST:localhost}
-#      port: ${REDIS_PORT:6379}
-#      client-type: lettuce
+
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
   #uri: mongodb+srv://quangnam130520:NLiXVlvZc7Xk6Z4S@cluster0.fwoaemp.mongodb.net/
   security:
     oauth2:
@@ -67,6 +92,8 @@ api:
   sofa:
     base-url: https://www.sofascore.com/api/v1
     timeout: 5000
+
+
 
 
 #sofascore:
