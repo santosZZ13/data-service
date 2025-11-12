@@ -59,7 +59,7 @@ participant "Kafka" as Kafka
 participant "Consumer" as Worker
 
 User -> FE: GET /api/sofa/matches?date=2025-11-09
-FE -> API: GET /matches?date=...
+FE -> API: GET /matches?date=2025-11-09
 API -> Cache: GET matches:date:2025-11-09
 alt Cache Miss
     Cache --> API: null
@@ -67,9 +67,12 @@ alt Cache Miss
     Sofa --> API: 6000 matches
     API -> Cache: SET matches:date:2025-11-09
     API -> DB: saveToDB()
+/'
+    * Optimize saveToDB to do bulk upsert for matches
+'/
 end
 
-API -> API: extract teamIds → 1000 IDs
+API -> API: extract teamIds → 12000 unique teamIds
 loop for each teamId
     API -> Cache: GET team:history:123
     alt Cache Miss

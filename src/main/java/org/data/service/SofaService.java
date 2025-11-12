@@ -25,5 +25,10 @@ public interface SofaService {
 
 	GetScheduledMatchByName.Response findMatchByName(String name);
 
+	/**
+	 * Gets matches by date.
+	 * @param date the date to filter matches
+	 * @return a response containing the matches on the specified date
+	 */
 	ApiResponse<GetSofaMatchesByDate.Response> getMatchesByDate(String date);
 }

@@ -70,6 +70,7 @@ public class SofaServiceImpl implements SofaService {
 //				sofaRepository.saveToDB(matchesByDate);
 			}
 		}
+
 		matchesByDate = matchesByDate.subList(0, 10); // For testing, limit to first 10 matches
 		Set<Integer> teamIds = extractTeamIds(matchesByDate);
 		List<Integer> missingTeamIds = checkMissingHistories(teamIds); // DB/cache

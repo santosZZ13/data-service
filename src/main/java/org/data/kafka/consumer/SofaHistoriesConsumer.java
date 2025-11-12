@@ -7,6 +7,7 @@ import org.data.external.sofa.model.TeamAnalysis;
 import org.data.external.sofa.service.SofaAnalysis;
 import org.data.external.sofa.service.SofaApiService;
 import org.data.kafka.message.TeamHistoriesJob;
+import org.data.redis.SofaRedisCache;
 import org.data.repository.SofaRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -26,6 +27,8 @@ public class SofaHistoriesConsumer {
 
 	private final SofaCacheId sofaCacheId;  // To cache
 
+	private final SofaRedisCache sofaRedisCache; // To cache in Redis
+
 	private final SimpMessagingTemplate messagingTemplate;  // Để push WebSocket (nếu có)
 
 	@KafkaListener(topics = "team-histories-fetch", groupId = "sofa-histories-group")
@@ -44,8 +47,9 @@ public class SofaHistoriesConsumer {
 				TeamAnalysis analysis = sofaAnalysis.getTeamAnalysis(teamId, teamHistory);
 				teamAnalyses.put(teamId, analysis);
 				// Save to DB/cache
-				sofaCacheId.putTeamHistory(teamId, teamHistory);
+//				sofaCacheId.putTeamHistory(teamId, teamHistory);
 				// Giả sử saveTeamAnalysisToDB(analysis);
+				sofaRedisCache.cacheTeamHistory(teamId, teamHistory);
 			}
 
 			// Update matches in DB with analysis (dựa trên date)
