@@ -33,4 +33,22 @@ public class SofaController {
 	}
 
 
+	@GetMapping("/analysis/status")
+	public ApiResponse<GetSofaMatchesByDate.Response> getAnalysisStatus(
+			@RequestParam String requestId,
+			@RequestParam String date) {
+
+		// Tìm trong DB hoặc Redis theo requestId + date
+		// → Trả về full nếu có, hoặc status "processing"
+		return null;
+	}
+
+	//	/api/sofa/matches/completed?requestId=xxx&date=yyy
+	public ApiResponse<GetSofaMatchesByDate.Response> getCompletedMatches(
+			@RequestParam String requestId,
+			@RequestParam String date) {
+		// Tìm trong DB hoặc Redis theo requestId + date
+		// → Trả về full nếu có, hoặc lỗi nếu không tìm thấy
+		return null;
+	}
 }

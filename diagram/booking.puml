@@ -1,0 +1,27 @@
+@startuml
+actor Customer
+participant "Customer Web/Mobile App" as App
+participant "POS API" as POS
+participant "Salon MongoDB" as DB
+participant "BEM API" as BEM
+
+Customer -> App: Select service, time, staff, contact info
+App -> POS: POST /api/bookings (reservations + customers)
+POS -> DB: Upsert Customer
+POS -> DB: Insert Reservation
+DB --> POS: Ack (ids)
+POS -> BEM: POST /api/bookings (Create booking)
+BEM --> POS: 201 Created (Sync OK)
+POS --> App: 201 Created (bookingId, status)
+App --> Customer: Show confirmation
+
+Customer -> App: View my bookings
+App -> POS: GET /api/bookings?customerId=...&status=...&from=...&to=...
+POS --> App: 200 OK (bookings[], pagination)
+
+alt BEM unavailable or error
+  POS --> App: 4xx/5xx error
+  App --> Customer: Show error and retry option
+end alt
+
+@enduml

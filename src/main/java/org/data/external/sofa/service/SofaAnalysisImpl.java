@@ -37,6 +37,7 @@ public class SofaAnalysisImpl implements SofaAnalysis {
 				TeamAnalysis.TeamStats teamStas = statsAnalysis.getTeamStas(histories, teamId);
 				List<TeamAnalysis.RecentMatch> recentMatches = statsAnalysis.getRecentMatches(histories, teamId);
 				teamAnalysis = TeamAnalysis.builder()
+//						.teamName() //TODO
 						.teamId(teamId)
 						.totalMatchesAnalyzed(histories.size())
 						.stats(teamStas)

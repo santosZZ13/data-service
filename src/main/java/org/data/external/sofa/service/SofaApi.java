@@ -1,6 +1,7 @@
 package org.data.external.sofa.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.data.cache.SofaCacheByDate;
 import org.data.cache.SofaCacheId;
 import org.data.config.ApiConfig;
@@ -24,6 +25,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class SofaApi implements SofaApiService {
@@ -104,19 +106,21 @@ public class SofaApi implements SofaApiService {
 						}
 						sofaCacheByTeamId.putTeamHistory(teamId, history);
 					}
-//					else {
-//						// Cache hit, sử dụng dữ liệu từ cache
-//						teamHistories.put(teamId, history);
-//						return;
-//					}
-					synchronized (teamHistories) {
-						teamHistories.put(teamId, history);
+					else {
+						// Cache hit, sử dụng dữ liệu từ cache
+						synchronized (teamHistories) {
+							teamHistories.put(teamId, history);
+						}
 					}
+//					synchronized (teamHistories) {
+//						teamHistories.put(teamId, history);
+//					}
 				} catch (Exception e) {
-					throw new ExternalServiceException(
-							String.format("Failed to fetch history for team ID: %d", teamId),
-							ErrorCodeRegistry.EXTERNAL_SERVICE_ERROR
-					);
+//					throw new ExternalServiceException(
+//							String.format("Failed to fetch history for team ID: %d", teamId),
+//							ErrorCodeRegistry.EXTERNAL_SERVICE_ERROR
+//					);
+					log.error("Failed to fetch history for team ID: {}", teamId, e);
 				}
 			}, executorService);
 			futures.add(future);
@@ -124,6 +128,7 @@ public class SofaApi implements SofaApiService {
 
 		try {
 			CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+			return teamHistories;
 		} catch (CompletionException e) {
 			if (e.getCause() instanceof ExternalServiceException || e.getCause() instanceof TeamNotFoundException) {
 				throw (RuntimeException) e.getCause();
@@ -135,12 +140,10 @@ public class SofaApi implements SofaApiService {
 					e
 			);
 		}
-		return teamHistories;
 	}
 
 
-	@Retryable(
-			value = {org.springframework.web.client.RestClientException.class},
+	@Retryable(value = {org.springframework.web.client.RestClientException.class},
 			maxAttempts = 4,
 			backoff = @Backoff(delay = 1000, multiplier = 1.5)
 	)

@@ -170,7 +170,7 @@ public class StatsAnalysisImpl implements StatsAnalysis {
 					int teamGoals = isHome ?
 							(getHomeScore(match).getCurrent() != null ? getHomeScore(match).getCurrent() : 0) :
 							(getAwayScore(match).getCurrent() != null ? getAwayScore(match).getCurrent() : 0);
-					return GetAnalystDto.RecentMatchDto.builder()
+					return TeamAnalysis.RecentMatch.builder()
 							.matchId(match.getMatchId())
 							.opponent(isHome ? match.getAwayTeam().getName() : match.getHomeTeam().getName())
 							.result((getHomeScore(match).getCurrent() != null ? getHomeScore(match).getCurrent() : 0) + "-" +
