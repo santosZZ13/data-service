@@ -1,0 +1,80 @@
+'{
+'  "_id": ObjectId,
+'  "teamId": Integer,  // Unique
+'  "teamName": String,
+'  "lastUpdated": Date,
+'  "histories": [  // Array of SofaMatchResponseDetail, limit 50-100 trận gần nhất
+'    {
+'      "matchId": Integer,
+'      "startTimestamp": Long,
+'      // ... all fields from SofaMatchResponseDetail, but reference matchId to scheduled_matches if needed
+'    }
+'  ]
+'}
+@startjson
+#highlight "histories"
+{
+    "_id": "64b8f0e2f1c2a3b4d5e6f7g8",
+    "teamId": 123,
+    "teamName": "Team A",
+    "lastUpdated": 1625184400000,
+    "histories": [
+        {
+            "matchId": 123456,
+            "startTimestamp": 1625789200000,
+            "tournament": {
+                "id": 987,
+                "name": "Champions League",
+                "priority": 1
+            },
+            "sessions": {
+                "id": 456,
+                "name": "Group Stage",
+                "year": "2021"
+            },
+            "status": {
+                "code": "1",
+                "description": "Scheduled",
+                "type": "upcoming"
+            },
+            "homeName": {
+                "id": "111",
+                "name": "Team A",
+                "slug": "team-a"
+            },
+            "awayName": {
+                "id": "222",
+                "name": "Team B",
+                "slug": "team-b"
+            },
+            "homeScore": {
+                "current": 0,
+                "display": 0,
+                "period1": 0,
+                "period2": 0,
+                "normalTime": 0,
+                "extra1": 0,
+                "extra2": 0,
+                "overtime": 0,
+                "penalties": 0,
+                "scoreEmpty": true
+            },
+            "awayScore": {
+                "current": 0,
+                "display": 0,
+                "period1": 0,
+                "period2": 0,
+                "normalTime": 0,
+                "extra1": 0,
+                "extra2": 0,
+                "overtime": 0,
+                "penalties": 0,
+                "scoreEmpty": true
+            },
+            "slug": "team-a-vs-team-b-2021-07-08",
+            "createdAt": 1625184400000,
+            "updatedAt": 1625184400000
+        }
+     ]
+}
+@endjson
